@@ -21,6 +21,36 @@ async def on_ready():
     print(f"✅ Connecté : {bot.user}")
 
 # =====================
+# +TOS
+# =====================
+@bot.command()
+async def tos(ctx):
+    embed = discord.Embed(
+        title="📋 TOS",
+        color=discord.Color.green(),
+        description=(
+            "🟢 FnF\n"
+            "🟢 No note\n"
+            "🟢 Screenshot payment : DETAILS\n\n"
+            "**No respect = No refund**"
+        )
+    )
+
+    embed.add_field(
+        name="💳 PayPal",
+        value="extazlemeilleur@gmail.com\nhaythemchl93380@gmail.com",
+        inline=False
+    )
+
+    embed.add_field(
+        name="₿ Litecoin (LTC)",
+        value="LLn2rAf7jzttyabPKe38PjSrCnV5AKk8Kx",
+        inline=False
+    )
+
+    await ctx.send(embed=embed)
+
+# =====================
 # +TICKET
 # =====================
 @bot.command()
@@ -37,9 +67,6 @@ async def ticket(ctx):
 
     await ctx.send(embed=embed, view=view)
 
-# =====================
-# MENU TICKET
-# =====================
 class TicketView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
@@ -75,14 +102,14 @@ class TicketView(discord.ui.View):
         )
 
 # =====================
-# +CLOSE AVEC TRANSCRIPT
+# +CLOSE (TRANSCRIPT)
 # =====================
 @bot.command()
 @commands.has_permissions(manage_channels=True)
 async def close(ctx):
 
     if not ctx.channel.name.startswith("ticket-"):
-        return await ctx.send("❌ Cette commande fonctionne seulement dans un ticket.")
+        return await ctx.send("❌ Cette commande fonctionne uniquement dans un ticket.")
 
     await ctx.send("🔒 Fermeture + génération transcript...")
 
@@ -104,13 +131,13 @@ async def close(ctx):
             user = member
             break
 
-    # staff DM
+    # staff
     try:
         await ctx.author.send("📜 Transcript ticket :", file=file)
     except:
         pass
 
-    # user DM
+    # user
     try:
         if user:
             await user.send("📜 Transcript de ton ticket :", file=file)
@@ -121,6 +148,6 @@ async def close(ctx):
     await ctx.channel.delete()
 
 # =====================
-# RUN BOT (RAILWAY)
+# RUN BOT (RAILWAY SAFE)
 # =====================
 bot.run(os.getenv("TOKEN"))
