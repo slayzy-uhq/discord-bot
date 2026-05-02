@@ -51,7 +51,7 @@ async def clear(ctx, amount: int):
 # =====================
 @bot.command()
 async def vouch(ctx):
-    await ctx.send("Vouch <@1002539242204971058> and <@1499834951150080198>")
+    await ctx.send("https://discord.com/channels/1496985489482190891/1497024400007106601\nVouch <@1002539242204971058> and <@1499834951150080198>")
 
 # =====================
 # TOS 1
@@ -136,7 +136,7 @@ async def unlock(ctx):
     await ctx.send("🔓 Unlocked")
 
 # =====================
-# 🎟 TICKET FIX (NO ERROR)
+# 🎟 TICKET FIX
 # =====================
 class TicketView(discord.ui.View):
     def __init__(self):
@@ -151,7 +151,7 @@ class TicketView(discord.ui.View):
     )
     async def select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
 
-        await interaction.response.defer(ephemeral=True)  # FIX IMPORTANT
+        await interaction.response.defer(ephemeral=True)
 
         guild = interaction.guild
         user = interaction.user
@@ -172,11 +172,7 @@ class TicketView(discord.ui.View):
 
 @bot.command()
 async def ticket(ctx):
-    embed = discord.Embed(
-        title="🎟 Support",
-        description="Choisis une catégorie",
-        color=discord.Color.blurple()
-    )
+    embed = discord.Embed(title="🎟 Support", description="Choisis une catégorie", color=discord.Color.blurple())
     await ctx.send(embed=embed, view=TicketView())
 
 # =====================
