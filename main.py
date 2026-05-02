@@ -12,30 +12,22 @@ intents.members = True
 bot = commands.Bot(command_prefix="+", intents=intents)
 
 # =====================
+# EMOJIS
+# =====================
+HAMMER = "<:hammer:1475639604513345747>"
+GREEN = "<:green:1475267542086975558>"
+CROSS = "<:cross:1303102536194064476>"
+CLEAR = "<:clear:1265166157959401503>"
+MUTE = "<:mute:1305204045195116606>"
+UNMUTE = "<:unmute:1305204037343383584>"
+TICKET = "<:ticket:1163792671475769364>"
+
+# =====================
 # READY
 # =====================
 @bot.event
 async def on_ready():
     print(f"✅ Connecté : {bot.user}")
-
-# =====================
-# ERROR HANDLER
-# =====================
-@bot.event
-async def on_command_error(ctx, error):
-    if isinstance(error, commands.MissingPermissions):
-        await ctx.send("❌ Permission refusée.")
-    elif isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("❌ Argument manquant.")
-    else:
-        print(error)
-
-# =====================
-# TEST
-# =====================
-@bot.command()
-async def test(ctx):
-    await ctx.send("✅ BOT OK")
 
 # =====================
 # CLEAR
@@ -44,52 +36,29 @@ async def test(ctx):
 @commands.has_permissions(manage_messages=True)
 async def clear(ctx, amount: int):
     await ctx.channel.purge(limit=amount + 1)
-    await ctx.send(f"🧹 {amount} messages supprimés", delete_after=3)
+    await ctx.send(f"{CLEAR} {amount} messages supprimés", delete_after=3)
 
 # =====================
-# VOUCH
-# =====================
-@bot.command()
-async def vouch(ctx):
-    await ctx.send("https://discord.com/channels/1496985489482190891/1497024400007106601\nVouch <@1002539242204971058> and <@1499834951150080198>")
-
-# =====================
-# TOS 1
-# =====================
-@bot.command()
-async def tos(ctx):
-    embed = discord.Embed(title="📋 TOS #1", color=discord.Color.green())
-    embed.description = "🟢 FnF\n🟢 No note\n🟢 Screenshot payment\n\n❌ No refund"
-    embed.add_field(name="PayPal", value="extazlemeilleur@gmail.com", inline=False)
-    embed.add_field(name="LTC", value="LTqhLYyzRAqzAyfJU8PykBPwJjXmKUdC8Z", inline=False)
-    await ctx.send(embed=embed)
-
-# =====================
-# TOS 2
-# =====================
-@bot.command()
-async def tos2(ctx):
-    embed = discord.Embed(title="📋 TOS #2", color=discord.Color.blue())
-    embed.description = "🟢 FnF\n🟢 No note\n🟢 Screenshot payment\n\n❌ No refund"
-    embed.add_field(name="PayPal", value="haythemchl93380@gmail.com", inline=False)
-    embed.add_field(name="LTC", value="LLn2rAf7jzttyabPKe38PjSrCnV5AKk8Kx", inline=False)
-    await ctx.send(embed=embed)
-
-# =====================
-# BAN / KICK / UNBAN
+# BAN
 # =====================
 @bot.command()
 @commands.has_permissions(ban_members=True)
 async def ban(ctx, member: discord.Member):
     await member.ban()
-    await ctx.send(f"🔨 {member} banni")
+    await ctx.send(f"{HAMMER} {member} a été banni")
 
+# =====================
+# KICK
+# =====================
 @bot.command()
 @commands.has_permissions(kick_members=True)
 async def kick(ctx, member: discord.Member):
     await member.kick()
     await ctx.send(f"👢 {member} kick")
 
+# =====================
+# UNBAN
+# =====================
 @bot.command()
 @commands.has_permissions(ban_members=True)
 async def unban(ctx, user_id: int):
@@ -98,7 +67,7 @@ async def unban(ctx, user_id: int):
     await ctx.send(f"🔓 {user} unban")
 
 # =====================
-# MUTE
+# MUTE / UNMUTE
 # =====================
 @bot.command()
 async def mute(ctx, member: discord.Member):
@@ -110,13 +79,42 @@ async def mute(ctx, member: discord.Member):
             await channel.set_permissions(role, send_messages=False)
 
     await member.add_roles(role)
-    await ctx.send(f"🔇 {member} mute")
+    await ctx.send(f"{MUTE} {member} mute")
 
 @bot.command()
 async def unmute(ctx, member: discord.Member):
     role = discord.utils.get(ctx.guild.roles, name="Muted")
     await member.remove_roles(role)
-    await ctx.send(f"🔊 {member} unmute")
+    await ctx.send(f"{UNMUTE} {member} unmute")
+
+# =====================
+# TOS 1
+# =====================
+@bot.command()
+async def tos(ctx):
+    embed = discord.Embed(title="📋 TOS #1", color=discord.Color.green())
+    embed.description = f"{GREEN} FnF\n{GREEN} No note\n{GREEN} Screenshot payment\n\n{CROSS} No refund"
+    embed.add_field(name="PayPal", value="extazlemeilleur@gmail.com", inline=False)
+    embed.add_field(name="LTC", value="LTqhLYyzRAqzAyfJU8PykBPwJjXmKUdC8Z", inline=False)
+    await ctx.send(embed=embed)
+
+# =====================
+# TOS 2
+# =====================
+@bot.command()
+async def tos2(ctx):
+    embed = discord.Embed(title="📋 TOS #2", color=discord.Color.blue())
+    embed.description = f"{GREEN} FnF\n{GREEN} No note\n{GREEN} Screenshot payment\n\n{CROSS} No refund"
+    embed.add_field(name="PayPal", value="haythemchl93380@gmail.com", inline=False)
+    embed.add_field(name="LTC", value="LLn2rAf7jzttyabPKe38PjSrCnV5AKk8Kx", inline=False)
+    await ctx.send(embed=embed)
+
+# =====================
+# VOUCH
+# =====================
+@bot.command()
+async def vouch(ctx):
+    await ctx.send("https://discord.com/channels/1496985489482190891/1497024400007106601\nVouch <@1002539242204971058> and <@1499834951150080198>")
 
 # =====================
 # LOCK / UNLOCK
@@ -167,12 +165,16 @@ class TicketView(discord.ui.View):
             overwrites=overwrites
         )
 
-        await channel.send(f"🎟 Ticket ouvert par {user.mention}")
+        await channel.send(f"{TICKET} Ticket ouvert par {user.mention}")
         await interaction.followup.send(f"✅ Ticket créé : {channel.mention}", ephemeral=True)
 
 @bot.command()
 async def ticket(ctx):
-    embed = discord.Embed(title="🎟 Support", description="Choisis une catégorie", color=discord.Color.blurple())
+    embed = discord.Embed(
+        title=f"{TICKET} Support",
+        description="Choisis une catégorie",
+        color=discord.Color.blurple()
+    )
     await ctx.send(embed=embed, view=TicketView())
 
 # =====================
