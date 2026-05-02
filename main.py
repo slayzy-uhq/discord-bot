@@ -5,9 +5,6 @@ import os
 import random
 from io import BytesIO
 
-# =====================
-# INTENTS
-# =====================
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
@@ -27,7 +24,7 @@ async def on_ready():
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingPermissions):
-        await ctx.send("❌ Tu n'as pas les permissions.")
+        await ctx.send("❌ Tu n'as pas la permission.")
     elif isinstance(error, commands.MissingRequiredArgument):
         await ctx.send("❌ Argument manquant.")
     else:
@@ -38,7 +35,7 @@ async def on_command_error(ctx, error):
 # =====================
 @bot.command()
 async def test(ctx):
-    await ctx.send("✅ Bot opérationnel")
+    await ctx.send("✅ BOT OK")
 
 # =====================
 # CLEAR
@@ -50,22 +47,42 @@ async def clear(ctx, amount: int):
     await ctx.send(f"🧹 {amount} messages supprimés", delete_after=3)
 
 # =====================
-# TOS
+# VOUCH
+# =====================
+@bot.command()
+async def vouch(ctx):
+    await ctx.send("Vouch <@1002539242204971058> and <@1499834951150080198>")
+
+# =====================
+# TOS #1
 # =====================
 @bot.command()
 async def tos(ctx):
     embed = discord.Embed(
-        title="📋 TOS",
+        title="📋 TOS #1",
         description="🟢 FnF\n🟢 No note\n🟢 Screenshot payment\n\n❌ No respect = No refund",
         color=discord.Color.green()
     )
-    embed.add_field(name="💳 PayPal", value="extazlemeilleur@gmail.com\nhaythemchl93380@gmail.com")
-    embed.add_field(name="💰 LTC", value="LLn2rAf7jzttyabPKe38PjSrCnV5AKk8Kx")
-
+    embed.add_field(name="💳 PayPal", value="extazlemeilleur@gmail.com", inline=False)
+    embed.add_field(name="💰 LTC", value="LTqhLYyzRAqzAyfJU8PykBPwJjXmKUdC8Z", inline=False)
     await ctx.send(embed=embed)
 
 # =====================
-# BAN / UNBAN
+# TOS #2
+# =====================
+@bot.command()
+async def tos2(ctx):
+    embed = discord.Embed(
+        title="📋 TOS #2",
+        description="🟢 FnF\n🟢 No note\n🟢 Screenshot payment\n\n❌ No respect = No refund",
+        color=discord.Color.blue()
+    )
+    embed.add_field(name="💳 PayPal", value="haythemchl93380@gmail.com", inline=False)
+    embed.add_field(name="💰 LTC", value="LLn2rAf7jzttyabPKe38PjSrCnV5AKk8Kx", inline=False)
+    await ctx.send(embed=embed)
+
+# =====================
+# BAN / UNBAN / KICK
 # =====================
 @bot.command()
 @commands.has_permissions(ban_members=True)
@@ -79,6 +96,12 @@ async def unban(ctx, user_id: int):
     user = await bot.fetch_user(user_id)
     await ctx.guild.unban(user)
     await ctx.send(f"🔓 {user} débanni")
+
+@bot.command()
+@commands.has_permissions(kick_members=True)
+async def kick(ctx, member: discord.Member):
+    await member.kick()
+    await ctx.send(f"👢 {member} kick")
 
 # =====================
 # MUTE / UNMUTE
@@ -97,9 +120,13 @@ async def mute(ctx, member: discord.Member):
     await ctx.send(f"🔇 {member} mute")
 
 @bot.command()
+@commands.has_permissions(manage_roles=True)
 async def unmute(ctx, member: discord.Member):
     role = discord.utils.get(ctx.guild.roles, name="Muted")
-    await member.remove_roles(role)
+
+    if role in member.roles:
+        await member.remove_roles(role)
+
     await ctx.send(f"🔊 {member} unmute")
 
 # =====================
@@ -110,24 +137,24 @@ async def lock(ctx):
     overwrite = ctx.channel.overwrites_for(ctx.guild.default_role)
     overwrite.send_messages = False
     await ctx.channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
-    await ctx.send("🔒 Channel locked")
+    await ctx.send("🔒 Salon verrouillé")
 
 @bot.command()
 async def unlock(ctx):
     overwrite = ctx.channel.overwrites_for(ctx.guild.default_role)
     overwrite.send_messages = True
     await ctx.channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
-    await ctx.send("🔓 Channel unlocked")
+    await ctx.send("🔓 Salon déverrouillé")
 
 # =====================
-# 🎟 TICKET MENU (PRO)
+# 🎟 TICKET MENU
 # =====================
 class TicketView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
 
     @discord.ui.select(
-        placeholder="🎟 Choisis ton ticket",
+        placeholder="🎟 Choisis une catégorie",
         options=[
             discord.SelectOption(label="Support", emoji="❓"),
             discord.SelectOption(label="Buy", emoji="🛒"),
@@ -158,7 +185,7 @@ class TicketView(discord.ui.View):
 async def ticket(ctx):
     embed = discord.Embed(
         title="🎟 Support 24/7",
-        description="Choisis une catégorie pour ouvrir un ticket",
+        description="Choisis une option pour ouvrir un ticket",
         color=discord.Color.blurple()
     )
     await ctx.send(embed=embed, view=TicketView())
@@ -184,18 +211,28 @@ async def close(ctx):
     await ctx.channel.delete()
 
 # =====================
-# 🎉 GIVEAWAY DESIGN PRO
+# RENAME
+# =====================
+@bot.command()
+@commands.has_permissions(manage_channels=True)
+async def rename(ctx, *, new_name):
+    if not ctx.channel.name.startswith("ticket-"):
+        return await ctx.send("❌ Utilisable uniquement dans un ticket.")
+
+    await ctx.channel.edit(name=f"ticket-{new_name}")
+    await ctx.send(f"✏️ Renommé en ticket-{new_name}")
+
+# =====================
+# GIVEAWAY
 # =====================
 @bot.command()
 async def gcreate(ctx, duration: int, winners: int, *, prize: str):
 
     embed = discord.Embed(
         title="🎉 GIVEAWAY 🎉",
-        description=f"🎁 **{prize}**\n\n👑 Winners: **{winners}**\n⏱ Durée: **{duration}s**\n\n🎊 Réagis avec 🎉 pour participer !",
-        color=discord.Color.from_rgb(255, 215, 0)
+        description=f"🎁 {prize}\n👑 Winners: {winners}\n⏱ {duration}s\n\nRéagis 🎉",
+        color=discord.Color.gold()
     )
-
-    embed.set_footer(text=f"Hosted by {ctx.author}")
 
     msg = await ctx.send(embed=embed)
     await msg.add_reaction("🎉")
@@ -214,16 +251,14 @@ async def gcreate(ctx, duration: int, winners: int, *, prize: str):
     if not users:
         return await ctx.send("❌ Aucun participant")
 
-    winners_list = random.sample(users, min(winners, len(users)))
-
-    await ctx.send(f"🎉 Winner(s): {', '.join(w.mention for w in winners_list)}")
+    winner = random.choice(users)
+    await ctx.send(f"🎉 Gagnant: {winner.mention}")
 
 # =====================
 # REROLL
 # =====================
 @bot.command()
 async def reroll(ctx, message_id: int):
-
     msg = await ctx.channel.fetch_message(message_id)
 
     users = []
@@ -237,10 +272,9 @@ async def reroll(ctx, message_id: int):
         return await ctx.send("❌ Aucun participant")
 
     winner = random.choice(users)
-
     await ctx.send(f"🎉 Nouveau gagnant: {winner.mention}")
 
 # =====================
-# RUN BOT
+# RUN
 # =====================
 bot.run(os.getenv("TOKEN"))
