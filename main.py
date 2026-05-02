@@ -14,11 +14,11 @@ bot = commands.Bot(command_prefix="+", intents=intents)
 # =====================
 # EMOJIS
 # =====================
-HAMMER = "<:hammer:1475639604513345747>"
-GREEN = "<:green:1475267542086975558>"
-CROSS = "<:cross:1303102536194064476>"
-CLEAR = "<:clear:1265166157959401503>"
-MUTE = "<:mute:1305204045195116606>"
+HAMMER = "<a:BANNED:1475639604513345747>"
+GREEN = "<a:yesss:1475267542086975558>"
+CROSS = "<a:non_snoway:1303102536194064476>"
+CLEAR = "<:delertle_snoway:1265166157959401503>"
+MUTE = "<:muted:1305204045195116606>"
 UNMUTE = "<:unmute:1305204037343383584>"
 TICKET = "<:ticket:1163792671475769364>"
 
@@ -39,7 +39,7 @@ async def clear(ctx, amount: int):
     await ctx.send(f"{CLEAR} {amount} messages supprimés", delete_after=3)
 
 # =====================
-# BAN
+# BAN / KICK / UNBAN
 # =====================
 @bot.command()
 @commands.has_permissions(ban_members=True)
@@ -47,18 +47,12 @@ async def ban(ctx, member: discord.Member):
     await member.ban()
     await ctx.send(f"{HAMMER} {member} a été banni")
 
-# =====================
-# KICK
-# =====================
 @bot.command()
 @commands.has_permissions(kick_members=True)
 async def kick(ctx, member: discord.Member):
     await member.kick()
     await ctx.send(f"👢 {member} kick")
 
-# =====================
-# UNBAN
-# =====================
 @bot.command()
 @commands.has_permissions(ban_members=True)
 async def unban(ctx, user_id: int):
@@ -88,6 +82,23 @@ async def unmute(ctx, member: discord.Member):
     await ctx.send(f"{UNMUTE} {member} unmute")
 
 # =====================
+# LOCK / UNLOCK
+# =====================
+@bot.command()
+async def lock(ctx):
+    overwrite = ctx.channel.overwrites_for(ctx.guild.default_role)
+    overwrite.send_messages = False
+    await ctx.channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
+    await ctx.send("🔒 Locked")
+
+@bot.command()
+async def unlock(ctx):
+    overwrite = ctx.channel.overwrites_for(ctx.guild.default_role)
+    overwrite.send_messages = True
+    await ctx.channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
+    await ctx.send("🔓 Unlocked")
+
+# =====================
 # TOS 1
 # =====================
 @bot.command()
@@ -115,23 +126,6 @@ async def tos2(ctx):
 @bot.command()
 async def vouch(ctx):
     await ctx.send("https://discord.com/channels/1496985489482190891/1497024400007106601\nVouch <@1002539242204971058> and <@1499834951150080198>")
-
-# =====================
-# LOCK / UNLOCK
-# =====================
-@bot.command()
-async def lock(ctx):
-    overwrite = ctx.channel.overwrites_for(ctx.guild.default_role)
-    overwrite.send_messages = False
-    await ctx.channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
-    await ctx.send("🔒 Locked")
-
-@bot.command()
-async def unlock(ctx):
-    overwrite = ctx.channel.overwrites_for(ctx.guild.default_role)
-    overwrite.send_messages = True
-    await ctx.channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
-    await ctx.send("🔓 Unlocked")
 
 # =====================
 # 🎟 TICKET FIX
@@ -166,7 +160,7 @@ class TicketView(discord.ui.View):
         )
 
         await channel.send(f"{TICKET} Ticket ouvert par {user.mention}")
-        await interaction.followup.send(f"✅ Ticket créé : {channel.mention}", ephemeral=True)
+        await interaction.followup.send(f"{GREEN} Ticket créé : {channel.mention}", ephemeral=True)
 
 @bot.command()
 async def ticket(ctx):
@@ -183,7 +177,7 @@ async def ticket(ctx):
 @bot.command()
 async def close(ctx):
     if "ticket-" not in ctx.channel.name:
-        return await ctx.send("❌ Pas un ticket")
+        return await ctx.send(f"{CROSS} Pas un ticket")
 
     messages = []
     async for msg in ctx.channel.history(limit=200):
@@ -203,7 +197,7 @@ async def close(ctx):
 @bot.command()
 async def rename(ctx, *, name):
     if not ctx.channel.name.startswith("ticket-"):
-        return await ctx.send("❌ Pas un ticket")
+        return await ctx.send(f"{CROSS} Pas un ticket")
 
     await ctx.channel.edit(name=f"ticket-{name}")
     await ctx.send("✏️ Renommé")
@@ -229,7 +223,7 @@ async def gcreate(ctx, duration: int, winners: int, *, prize: str):
                     users.append(user)
 
     if not users:
-        return await ctx.send("❌ Aucun participant")
+        return await ctx.send(f"{CROSS} Aucun participant")
 
     winner = random.choice(users)
     await ctx.send(f"🎉 Winner: {winner.mention}")
@@ -249,7 +243,7 @@ async def reroll(ctx, message_id: int):
                     users.append(user)
 
     if not users:
-        return await ctx.send("❌ Aucun participant")
+        return await ctx.send(f"{CROSS} Aucun participant")
 
     winner = random.choice(users)
     await ctx.send(f"🎉 New winner: {winner.mention}")
